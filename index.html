@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Candidate Data Form</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="form-container">
+        <h1>Candidate Data Form</h1>
+        <form id="candidateForm">
+
+            <label for="candidateName">Candidate Name:</label>
+            <input type="text" id="candidateName" name="candidateName" required>
+
+            <label for="constituencyCode">Constituency Code:</label>
+            <input type="text" id="constituencyCode" name="constituencyCode" required>
+
+            <label for="candidateParty">Candidate Party:</label>
+            <input type="text" id="candidateParty" name="candidateParty" required>
+
+            <button type="submit">Submit</button>
+        </form>
+
+        <div class="navigation">
+            <a href="election.html" class="nav-button">Go to Election Form</a>
+        </div>
+    </div>
+
+    <script>
+       document.getElementById("candidateForm").addEventListener("submit", function (event) {
+    event.preventDefault();
+
+    const candidateName = document.getElementById("candidateName").value;
+    const constituencyCode = document.getElementById("constituencyCode").value;
+    const candidateParty = document.getElementById("candidateParty").value;
+
+    fetch("http://localhost:3000/add-candidate", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            candidateName: candidateName,
+            constituencyID: constituencyCode,
+            party: candidateParty
+        })
+    })
+    .then(response => response.text())
+    .then(data => {
+        alert(data); // Show success or error message from the server
+    })
+    .catch(error => {
+        console.error("Error:", error);
+    });
+});
+    </script>
+</body>
+</html>

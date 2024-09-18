@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Election Results</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+        }
+        .results {
+            margin-top: 20px;
+        }
+        .candidate {
+            margin-bottom: 10px;
+        }
+        .error {
+            color: red;
+        }
+        input, button {
+            margin: 10px;
+            padding: 10px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Election Results</h1>
+        <label for="electionId">Enter Election ID:</label>
+        <input type="text" id="electionId" placeholder="e.g., ABC123">
+        <button onclick="fetchResults()">Fetch Results</button>
+        <div id="resultSection" class="results"></div>
+        <div id="errorSection" class="error"></div>
+    </div>
+
+    <script>
+        async function fetchResults() {
+            const electionId = document.getElementById("electionId").value;
+            const resultSection = document.getElementById("resultSection");
+            const errorSection = document.getElementById("errorSection");
+
+            // Clear previous results
+            resultSection.innerHTML = "";
+            errorSection.innerHTML = "";
+
+            if (!electionId) {
+                errorSection.innerHTML = "Please enter an Election ID.";
+                return;
+            }
+
+            try {
+                // Fetch election results
+                const response = await fetch(`http://localhost:3000/get-results/${electionId}`);
+                
+                if (!response.ok) {
+                    throw new Error(`Error fetching results for Election ID ${electionId}.`);
+                }
+
+                const data = await response.json();
+
+                // Display Constituency Name and Results
+                resultSection.innerHTML = `<h2>Results for Constituency: ${data.constituencyName}</h2>`;
+                data.candidates.forEach(candidate => {
+                    resultSection.innerHTML += `
+                        <div class="candidate">
+                            <strong>Candidate:</strong> ${candidate.candidateName} <br>
+                            <strong>Party:</strong> ${candidate.party} <br>
+                            <strong>Votes:</strong> ${candidate.votes}
+                        </div>
+                    `;
+                });
+            } catch (error) {
+                errorSection.innerHTML = error.message;
+            }
+        }
+    </script>
+</body>
+</html>
